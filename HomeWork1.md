@@ -27,7 +27,8 @@ pg_lsclusters
 сделать в первой сессии новую таблицу и наполнить ее данными
 create table persons(id serial, first_name text, second_name text);
 insert into persons(first_name, second_name) values('ivan', 'ivanov');
-insert into persons(first_name, second_name) values('petr', 'petrov'); commit;
+insert into persons(first_name, second_name) values('petr', 'petrov');
+commit;
 посмотреть текущий уровень изоляции
 
 ![Альт-текст](https://i.ibb.co/8cmZy9W/img9.png)
