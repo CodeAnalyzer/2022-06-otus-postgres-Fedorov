@@ -34,21 +34,24 @@
 * commit;
 
 ![Альт-текст](https://i.ibb.co/cN6HZ24/Home-Work6-6.png)
-https://i.ibb.co/cN6HZ24/Home-Work6-6.png
+
+https://ibb.co/9qbL1yQ
 
 Содержимое лога 
 
 sudo nano /var/log/postgresql/postgresql-14-main.log
 
 ![Альт-текст](https://i.ibb.co/LZ67YNq/Home-Work6-7.png)
-https://i.ibb.co/LZ67YNq/Home-Work6-7.png
+
+https://ibb.co/hmHzLYn
 
 `Смоделируйте ситуацию обновления одной и той же строки командами UPDATE в разных сеансах.
 Изучите возникшие блокировки в представлении pg_locks и убедитесь, что все они понятны.
 Пришлите список блокировок и объясните, что значит каждая.`
 
 ![Альт-текст](https://i.ibb.co/thqtSJH/Home-Work6-8.png)
-https://i.ibb.co/thqtSJH/Home-Work6-8.png
+
+https://ibb.co/TT4SZgw
 
 ACCESS SHARE - самый слабый режим блокировки, совместим с любыми кроме ACCESS EXCLUSIVE, выставляется при выполнении SELECT. Блокировка выставлена на представление (вьюхи) pg_locks, потому что в транзакции выполнили SELECT из него.
 
@@ -82,12 +85,14 @@ EXCLUSIVE - режим совместим только с блокировкой
 
 
 ![Альт-текст](https://i.ibb.co/Sn7tBGs/Home-Work6-9.png)
-https://i.ibb.co/Sn7tBGs/Home-Work6-9.png
+
+https://ibb.co/Hzptq3F
 
 sudo nano /var/log/postgresql/postgresql-14-main.log
 
 ![Альт-текст](https://i.ibb.co/DGCNX7D/Home-Work6-10.png)
-https://i.ibb.co/DGCNX7D/Home-Work6-10.png
+
+https://ibb.co/SQn2TKX
 
 Классический дидлок.
 
