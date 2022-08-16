@@ -54,7 +54,7 @@ Quick install instructions - Debian/Ubuntu:
 
 ![Альт-текст](https://i.ibb.co/hBqnxmF/Home-Work8-7.png)
 
-### `Изменение настроек`
+### `Оптимизация настроек`
 
 ![Альт-текст](https://i.ibb.co/kBCHky8/Home-Work8-8.png)
 
