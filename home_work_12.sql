@@ -1,10 +1,10 @@
--- ДЗ тема: триггеры, поддержка заполнения витрин
+-- Р”Р— С‚РµРјР°: С‚СЂРёРіРіРµСЂС‹, РїРѕРґРґРµСЂР¶РєР° Р·Р°РїРѕР»РЅРµРЅРёСЏ РІРёС‚СЂРёРЅ
 DROP SCHEMA IF EXISTS pract_functions CASCADE;
 CREATE SCHEMA pract_functions;
 
 SET search_path = pract_functions, publ;
 
--- товары:
+-- С‚РѕРІР°СЂС‹:
 CREATE TABLE goods
 (
     goods_id    integer PRIMARY KEY,
@@ -12,9 +12,9 @@ CREATE TABLE goods
     good_price  numeric(12, 2) NOT NULL CHECK (good_price > 0.0)
 );
 INSERT INTO goods (goods_id, good_name, good_price)
-VALUES 	(1, 'Спички хозайственные', .50),	(2, 'Автомобиль Ferrari FXX K', 185000000.01);
+VALUES 	(1, 'РЎРїРёС‡РєРё С…РѕР·Р°Р№СЃС‚РІРµРЅРЅС‹Рµ', .50),	(2, 'РђРІС‚РѕРјРѕР±РёР»СЊ Ferrari FXX K', 185000000.01);
 
--- Продажи
+-- РџСЂРѕРґР°Р¶Рё
 CREATE TABLE sales
 (
     sales_id    integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -25,21 +25,21 @@ CREATE TABLE sales
 
 INSERT INTO sales (good_id, sales_qty) VALUES (1, 10), (1, 1), (1, 120), (2, 1);
 
--- отчет:
+-- РѕС‚С‡РµС‚:
 SELECT G.good_name, sum(G.good_price * S.sales_qty)
 FROM goods G
 INNER JOIN sales S ON S.good_id = G.goods_id
 GROUP BY G.good_name;
 
--- с увеличением объёма данных отчет стал создаваться медленно
--- Принято решение денормализовать БД, создать таблицу
+-- СЃ СѓРІРµР»РёС‡РµРЅРёРµРј РѕР±СЉС‘РјР° РґР°РЅРЅС‹С… РѕС‚С‡РµС‚ СЃС‚Р°Р» СЃРѕР·РґР°РІР°С‚СЊСЃСЏ РјРµРґР»РµРЅРЅРѕ
+-- РџСЂРёРЅСЏС‚Рѕ СЂРµС€РµРЅРёРµ РґРµРЅРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ Р‘Р”, СЃРѕР·РґР°С‚СЊ С‚Р°Р±Р»РёС†Сѓ
 CREATE TABLE good_sum_mart
 (
 	good_name varchar(63) NOT NULL,
 	sum_sale	numeric(16, 2) NOT NULL
 );
 
--- Первичное заполнение витрины
+-- РџРµСЂРІРёС‡РЅРѕРµ Р·Р°РїРѕР»РЅРµРЅРёРµ РІРёС‚СЂРёРЅС‹
 insert into good_sum_mart (good_name, sum_sale)
 select G.good_name, sum(G.good_price * S.sales_qty)
 from goods G
@@ -49,7 +49,7 @@ group by G.good_name;
 select * from good_sum_mart;
 
 -------------------------------------------------------------------------
---           Создать триггер (на таблице sales) для поддержки          --
+--           РЎРѕР·РґР°С‚СЊ С‚СЂРёРіРіРµСЂ (РЅР° С‚Р°Р±Р»РёС†Рµ sales) РґР»СЏ РїРѕРґРґРµСЂР¶РєРё          --
 -------------------------------------------------------------------------
 
 -- INSERT ---------------------------------------------------------------
@@ -59,20 +59,20 @@ returns trigger
 as
 $BODY$
 begin
-	-- Кандидаты на добавление/обновление в витрину
+	-- РљР°РЅРґРёРґР°С‚С‹ РЅР° РґРѕР±Р°РІР»РµРЅРёРµ/РѕР±РЅРѕРІР»РµРЅРёРµ РІ РІРёС‚СЂРёРЅСѓ
 	create temp table if not exists tmp_good_sum_ins as
   select g.good_name as good_name, sum(g.good_price * n.sales_qty) as sum_sale
     from new_table n
    inner join goods g on g.goods_id = n.good_id
    group by g.good_name;
   
-  -- Обновляем витрину, если данные о товаре уже есть
+  -- РћР±РЅРѕРІР»СЏРµРј РІРёС‚СЂРёРЅСѓ, РµСЃР»Рё РґР°РЅРЅС‹Рµ Рѕ С‚РѕРІР°СЂРµ СѓР¶Рµ РµСЃС‚СЊ
   update good_sum_mart as gsm
      set sum_sale = gsm.sum_sale + tmp.sum_sale
     from tmp_good_sum_ins tmp 
    where gsm.good_name = tmp.good_name;
   
-  -- Добавляем отсутствующие в витрине товары
+  -- Р”РѕР±Р°РІР»СЏРµРј РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‰РёРµ РІ РІРёС‚СЂРёРЅРµ С‚РѕРІР°СЂС‹
   insert into good_sum_mart (good_name, sum_sale)
   select tmp.good_name, tmp.sum_sale
     from tmp_good_sum_ins tmp
@@ -97,7 +97,7 @@ returns trigger
 as
 $BODY$
 begin
-	-- Кандидаты на обновление в витрине
+	-- РљР°РЅРґРёРґР°С‚С‹ РЅР° РѕР±РЅРѕРІР»РµРЅРёРµ РІ РІРёС‚СЂРёРЅРµ
 	create temp table if not exists tmp_good_sum_upd as
   select g.good_name as good_name, sum(g.good_price * s.sales_qty) as sum_sale
     from new_table n
@@ -105,7 +105,7 @@ begin
    inner join sales s ON s.good_id = g.goods_id
    group by g.good_name;
   
-  -- Обновляем витрину
+  -- РћР±РЅРѕРІР»СЏРµРј РІРёС‚СЂРёРЅСѓ
   update good_sum_mart as gsm
      set sum_sale = tmp.sum_sale
     from tmp_good_sum_upd tmp 
@@ -122,7 +122,7 @@ after update on sales referencing new table as new_table
 for each statement
 execute function trigger_after_update_sales();
 
--- ТЕСТ -----------------------------------------------------------------
+-- РўР•РЎРў -----------------------------------------------------------------
 
 select * from good_sum_mart;
 update sales set sales_qty = 50 where sales_id = 1;
@@ -135,7 +135,7 @@ returns trigger
 as
 $BODY$
 begin
-	-- Кандидаты на обновление в витрине
+	-- РљР°РЅРґРёРґР°С‚С‹ РЅР° РѕР±РЅРѕРІР»РµРЅРёРµ РІ РІРёС‚СЂРёРЅРµ
 	create temp table if not exists tmp_good_sum_del as
   select g.good_name as good_name, sum(g.good_price * s.sales_qty) as sum_sale
     from old_table n
@@ -143,7 +143,7 @@ begin
    inner join sales s ON s.good_id = g.goods_id
    group by g.good_name;
   
-  -- Обновляем витрину
+  -- РћР±РЅРѕРІР»СЏРµРј РІРёС‚СЂРёРЅСѓ
   update good_sum_mart as gsm
      set sum_sale = tmp.sum_sale
     from tmp_good_sum_del tmp 
@@ -160,7 +160,7 @@ after delete on sales referencing old table as old_table
 for each statement
 execute function trigger_after_delete_sales();
 
--- ТЕСТ -----------------------------------------------------------------
+-- РўР•РЎРў -----------------------------------------------------------------
 
 select * from good_sum_mart;
 delete from sales where sales_id = 1;
